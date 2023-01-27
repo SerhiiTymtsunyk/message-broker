@@ -1,0 +1,29 @@
+version: '3.2'
+services:
+  php:
+    build: ./docker/php
+    container_name: 'php'
+    volumes:
+      - .:/src
+    working_dir: /src
+    depends_on:
+      - rabbitmq
+    entrypoint: ['tail', '-f', '/dev/null']
+    networks:
+      - rabbitmq_net
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/
+      - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
+    networks:
+      - rabbitmq_net
+
+networks:
+  rabbitmq_net:
+    driver: bridge
